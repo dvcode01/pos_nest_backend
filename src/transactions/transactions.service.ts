@@ -4,7 +4,7 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction, TransactionContents } from './entities/transaction.entity';
 import { Product } from 'src/products/entities/product.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class TransactionsService {
@@ -51,8 +51,14 @@ export class TransactionsService {
     return 'Sale stored correctly';
   }
 
-  findAll() {
-    return `This action returns all transactions`;
+  async findAll() {
+    const options: FindManyOptions<Transaction> = {
+      relations: {
+        contents: true
+      }
+    };
+
+    return await this.transactionRepository.find(options);
   }
 
   findOne(id: number) {
