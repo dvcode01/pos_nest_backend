@@ -15,24 +15,35 @@ export class TransactionsService {
   ){}
 
   async create(createTransactionDto: CreateTransactionDto) {
-    const transaction = new Transaction();
-    transaction.total = createTransactionDto.total;
-    await this.transactionRepository.save(transaction);
+    await this.productRepository.manager.transaction(async(transactionEntityManager) => {
+      const transaction = new Transaction();
+      transaction.total = createTransactionDto.total;
+      
+      for(const contents of createTransactionDto.contents){
+        const product = await transactionEntityManager.findOneBy(Product, {id: contents.productId});
+        
+        if(!product){
+          throw new NotFoundException('Product not found');
+        }
+        
+        if(contents.quantity > product.inventory){
+          throw new BadRequestException(`Item ${product.name} exceeds the available quantity`);
+        }
+  
+        product.inventory -= contents.quantity;
+        
+        // Create transactions contents instance
+        const transactionContents = new TransactionContents();
+        transactionContents.price = contents.price;
+        transactionContents.product = product;
+        transactionContents.quantity = contents.quantity;
+        transactionContents.transaction = transaction;
+        
+        await transactionEntityManager.save(transaction);
+        await transactionEntityManager.save(transactionContents);
+      }
+    });
     
-    for(const contents of createTransactionDto.contents){
-      const product = await this.productRepository.findOneBy({id: contents.productId});
-
-      if(!product){
-        throw new NotFoundException('Product not found');
-      }
-
-      if(contents.quantity > product.inventory){
-        throw new BadRequestException(`Item ${product.name} exceeds the available quantity`);
-      }
-
-      product.inventory -= contents.quantity;  
-      await this.transactionContentsRepository.save({...contents, transaction, product});
-    }
 
     return 'Sale stored correctly';
   }
