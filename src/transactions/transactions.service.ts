@@ -21,13 +21,16 @@ export class TransactionsService {
       
       for(const contents of createTransactionDto.contents){
         const product = await transactionEntityManager.findOneBy(Product, {id: contents.productId});
+        const errors: string[] = [];
         
         if(!product){
-          throw new NotFoundException('Product not found');
+          errors.push(`The product with ID: ${contents.productId} does not exist`);
+          throw new NotFoundException(errors);
         }
         
         if(contents.quantity > product.inventory){
-          throw new BadRequestException(`Item ${product.name} exceeds the available quantity`);
+          errors.push(`Item ${product.name} exceeds the available quantity`);
+          throw new BadRequestException(errors);
         }
   
         product.inventory -= contents.quantity;
