@@ -26,8 +26,8 @@ export class TransactionsService {
         throw new NotFoundException('Product not found');
       }
 
-      if(product.inventory < contents.quantity){
-        throw new BadRequestException('Invalid quantity');
+      if(contents.quantity > product.inventory){
+        throw new BadRequestException(`Item ${product.name} exceeds the available quantity`);
       }
 
       product.inventory -= contents.quantity;  
