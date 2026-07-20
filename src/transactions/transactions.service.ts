@@ -4,7 +4,8 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction, TransactionContents } from './entities/transaction.entity';
 import { Product } from 'src/products/entities/product.entity';
-import { FindManyOptions, Repository } from 'typeorm';
+import { Between, FindManyOptions, Repository } from 'typeorm';
+import { endOfDay, isValid, parseISO, startOfDay } from 'date-fns';
 
 @Injectable()
 export class TransactionsService {
@@ -47,16 +48,30 @@ export class TransactionsService {
       }
     });
     
-
     return 'Sale stored correctly';
   }
 
-  async findAll() {
+  async findAll(transactionDate?: string) {
     const options: FindManyOptions<Transaction> = {
       relations: {
         contents: true
       }
     };
+
+    if(transactionDate){
+      const date = parseISO(transactionDate);
+
+      if(isValid(date)){
+        throw new BadRequestException('Invalid date');
+      }
+
+      const start = startOfDay(date);
+      const end = endOfDay(date);
+
+      options.where = {
+        transactionDate: Between(start, end)
+      };
+    }
 
     return await this.transactionRepository.find(options);
   }
