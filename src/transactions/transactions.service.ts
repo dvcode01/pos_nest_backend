@@ -95,12 +95,15 @@ export class TransactionsService {
 
   async remove(id: number) {
     const transaction = await this.findOne(id);
-    this.transactionContentsRepository;
 
     for(const contents of transaction.contents){
+      const product = await this.productRepository.findOneBy({id: contents.product.id});
       const transactionContents = await this.transactionContentsRepository.findOneBy({id: contents.id});
       
-      if(transactionContents){
+      if(transactionContents && product){
+        product.inventory += contents.quantity;
+        
+        await this.productRepository.save(product);
         await this.transactionContentsRepository.remove(transactionContents);
       }
     }

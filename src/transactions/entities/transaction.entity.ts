@@ -13,7 +13,7 @@ export class Transaction {
     transactionDate: Date;
 
     @OneToMany(() => TransactionContents, (transaction) => transaction.transaction)
-    contents: Transaction[];
+    contents: TransactionContents[];
 }
 
 @Entity()
