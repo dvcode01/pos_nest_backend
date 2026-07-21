@@ -7,6 +7,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { typeORMConfig } from './config/typeorm.config';
 import { ProductsModule } from './products/products.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { CouponsModule } from './coupons/coupons.module';
 
 
 @Module({
@@ -18,7 +19,7 @@ import { TransactionsModule } from './transactions/transactions.module';
       useFactory: typeORMConfig,
       inject: [ConfigService]
     }), 
-    CategoriesModule, ProductsModule, TransactionsModule],
+    CategoriesModule, ProductsModule, TransactionsModule, CouponsModule],
   controllers: [AppController],
   providers: [AppService],
 })
