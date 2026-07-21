@@ -14,7 +14,7 @@ export class CouponsService {
   }
 
   findAll() {
-    return `This action returns all coupons`;
+    return this.couponRepository.find();
   }
 
   findOne(id: number) {
