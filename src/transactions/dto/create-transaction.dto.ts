@@ -21,6 +21,9 @@ export class CreateTransactionDto {
     @IsNumber({}, { message: 'Invalid quantity' })
     total: number
 
+    @IsOptional()
+    coupon: string;
+
     @IsArray()
     @ArrayNotEmpty({ message: 'The contents cannot be empty' })
     @ValidateNested()
