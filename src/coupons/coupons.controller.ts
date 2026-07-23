@@ -37,6 +37,6 @@ export class CouponsController {
   @Post('/apply-coupon')
   @HttpCode(HttpStatus.OK)
   applyCoupon(@Body() applyCouponDto: ApplyCouponDto){
-    return this.couponsService.applyCoupon(applyCouponDto);
+    return this.couponsService.applyCoupon(applyCouponDto.coupon_name);
   }
 }

@@ -43,8 +43,8 @@ export class CouponsService {
     return 'Coupon removed';
   }
 
-  async applyCoupon(applyCouponDto: ApplyCouponDto){
-    const coupon = await this.couponRepository.findOneBy({name: applyCouponDto.coupon_name});
+  async applyCoupon(couponName: string){
+    const coupon = await this.couponRepository.findOneBy({name: couponName});
 
     if(!coupon) {
       throw new NotFoundException('Coupon does not exist...');
