@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from '../categories/entities/category.entity';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
 import { products } from './data/products';
 import { categories } from './data/categories';
@@ -11,7 +11,14 @@ export class SeederService {
     constructor(
         @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
         @InjectRepository(Product) private readonly productRepository: Repository<Product>,
+        private dataSource: DataSource
     ) { }
+
+    async onModuleInit(){
+        const connection = this.dataSource;
+        await connection.dropDatabase();
+        await connection.synchronize();
+    }
 
     async seed() {
         await this.categoryRepository.save(categories);
@@ -31,8 +38,6 @@ export class SeederService {
             product.category = category;
             await this.productRepository.save(product);
         }
-
-        console.log('Desde seed');
     }
 
 }
