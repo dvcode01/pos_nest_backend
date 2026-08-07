@@ -60,7 +60,7 @@ export class TransactionsService {
       }
     });
     
-    return 'Sale stored correctly';
+    return {message: 'Sale stored correctly'};
   }
 
   async findAll(transactionDate?: string) {
@@ -121,6 +121,6 @@ export class TransactionsService {
     }
 
     await this.transactionRepository.remove(transaction);
-    return 'Sale removed';
+    return {message: 'Sale removed'};
   }
 }
